@@ -2,9 +2,10 @@
 import pandas as pd
 import numpy as np
 import os
-import cv2
+import cv2, pydicom
 import glob
 from torch.utils.data import Dataset
+import functools
 
 def traintfms(x=256, y=256):
     tfms = [
@@ -58,9 +59,17 @@ def to_tensor(x, **kwargs):
     Convert image or mask.
     """
     return x.transpose(2, 0, 1).astype('float32')
+
+formatted_settings = {
+            'input_size': [3, 224, 224],
+            'input_range': [0, 1],
+            'mean': [0.485, 0.456, 0.406],
+            'std': [0.229, 0.224, 0.225],}
+
+preprocessing_fn = functools.partial(preprocess_input, **formatted_settings)
     
 class CTDataset2D(Dataset):
-    def __init__(self,df_path,transforms = A.Compose([A.HorizontalFlip()]),preprocessing=None,size=256,mode='val'):
+    def __init__(self,df_path,transforms = A.Compose([A.HorizontalFlip()]),preprocessing=get_preprocessing(preprocessing_fn),size=256,mode='val'):
         df = pd.read_csv(df_path)
         self.df_main = df.values
         if mode=='val':
@@ -75,7 +84,8 @@ class CTDataset2D(Dataset):
 
     def __getitem__(self, idx):
         row = self.df[idx]
-        img = cv2.imread(glob.glob(f"{jpeg_dir}/{row[0]}/{row[1]}/*{row[2]}.jpg")[0])
+        img = pydicom.dcmread(glob.glob(f"{jpeg_dir}/{row[0]}/{row[1]}/*{row[2]}.jpg")[0])
+        img = img.pixel_array
         label = row[3:].astype(int)
         label[2:] = label[2:] if label[0]==1 else 0
         if self.transforms:
