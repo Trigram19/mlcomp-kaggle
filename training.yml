@@ -1,0 +1,13 @@
+info:
+  name: mnist_train
+  project: examples
+  layout: classify
+  expdir: .
+executors:
+  train:
+    type: catalyst
+    gpu: 1
+    distr: False
+    single_node: True
+    args:
+        config: catalyst.yml
