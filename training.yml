@@ -11,3 +11,6 @@ executors:
     single_node: True
     args:
         config: catalyst.yml
+        
+  validation:
+    type: validation
