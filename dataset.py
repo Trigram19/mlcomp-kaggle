@@ -60,7 +60,8 @@ def to_tensor(x, **kwargs):
     return x.transpose(2, 0, 1).astype('float32')
     
 class CTDataset2D(Dataset):
-    def __init__(self,df,transforms = A.Compose([A.HorizontalFlip()]),preprocessing=None,size=256,mode='val'):
+    def __init__(self,df_path,transforms = A.Compose([A.HorizontalFlip()]),preprocessing=None,size=256,mode='val'):
+        df = pd.read_csv(df_path)
         self.df_main = df.values
         if mode=='val':
             self.df = self.df_main
