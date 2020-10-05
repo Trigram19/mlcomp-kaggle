@@ -84,7 +84,7 @@ class CTDataset2D(Dataset):
 
     def __getitem__(self, idx):
         row = self.df[idx]
-        img = pydicom.dcmread(glob.glob(f"{jpeg_dir}/{row[0]}/{row[1]}/*{row[2]}.dcm")[0])
+        img = pydicom.dcmread(glob.glob(f"data/rsna/rsna-str-pulmonary-embolism-detection/{row[0]}/{row[1]}/*{row[2]}.dcm")[0])
         img = img.pixel_array
         label = row[3:].astype(int)
         label[2:] = label[2:] if label[0]==1 else 0
