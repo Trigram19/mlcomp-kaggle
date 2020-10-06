@@ -6,7 +6,7 @@ import cv2, pydicom
 import glob
 from torch.utils.data import Dataset
 import functools
-
+import albumentations as A
 def traintfms(x=256, y=256):
     tfms = [
         A.OneOf([
